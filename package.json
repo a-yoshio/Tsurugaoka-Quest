@@ -1,0 +1,15 @@
+{
+  "name": "tsurugaoka-quest",
+  "private": true,
+  "packageManager": "pnpm@9.15.5",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "dev": "pnpm --filter @tsurugaoka/mobile dev",
+    "dev:backend": "pnpm --filter @tsurugaoka/backend sandbox",
+    "build": "pnpm -r build",
+    "test": "pnpm -r test",
+    "lint": "pnpm -r lint"
+  }
+}

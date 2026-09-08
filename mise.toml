@@ -1,0 +1,18 @@
+[tools]
+node = "22"
+pnpm = "9.15.5"
+
+[tasks.install]
+run = "pnpm install"
+
+[tasks.dev]
+run = "pnpm dev"
+
+[tasks.backend]
+run = "pnpm dev:backend"
+
+[tasks.test]
+run = "pnpm test"
+
+[tasks.build]
+run = "pnpm build"

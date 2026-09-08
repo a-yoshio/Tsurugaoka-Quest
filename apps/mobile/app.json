@@ -1,0 +1,20 @@
+{
+  "expo": {
+    "name": "Tsurugaoka Quest",
+    "slug": "tsurugaoka-quest",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "scheme": "tsurugaoka-quest",
+    "ios": {
+      "supportsTablet": true,
+      "deploymentTarget": "26.1"
+    },
+    "android": {
+      "package": "jp.co.tsurugaoka.quest",
+      "adaptiveIcon": {
+        "backgroundColor": "#101828"
+      }
+    }
+  }
+}

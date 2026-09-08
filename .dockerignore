@@ -1,0 +1,9 @@
+.git
+.github
+node_modules
+.pnpm-store
+apps/mobile/dist
+.amplify
+amplify_outputs.json
+coverage
+*.log
