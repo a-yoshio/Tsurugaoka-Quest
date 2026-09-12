@@ -3,141 +3,58 @@ import "./styles.css";
 
 const SOUND_ENABLED_STORAGE_KEY = "tsurugaoka-quest-sound-enabled";
 
+type CharacterId = "fb" | "hary" | "lipton";
+
+const characters: Array<{
+  id: CharacterId;
+  key: string;
+  name: string;
+  answer: string;
+  image: string;
+}> = [
+  { id: "fb", key: "fb", name: "えふびぃ", answer: "えふびぃだ。", image: "/fb-front.png" },
+  { id: "hary", key: "hary", name: "はりぃ", answer: "はりぃだよ", image: "/hary-front.png" },
+  { id: "lipton", key: "lipton", name: "りぷお", answer: "りぷおだよ。", image: "/lipton-front.png" },
+];
+
 class StartScene extends Phaser.Scene {
-  private startButton!: Phaser.GameObjects.Rectangle;
-  private startButtonLabel!: Phaser.GameObjects.Text;
   private soundEnabled = this.loadSoundPreference();
-  private soundButton!: Phaser.GameObjects.Rectangle;
-  private soundButtonLabel!: Phaser.GameObjects.Text;
 
   constructor() {
     super("StartScene");
   }
 
   preload() {
-    this.load.image("hary", "/hary-front.png");
-    this.load.image("fb", "/fb-front.png");
-    this.load.image("lipton", "/lipton-front.png");
+    characters.forEach((character) => this.load.image(character.key, character.image));
   }
 
   create() {
     const { width, height } = this.scale;
+    this.add.rectangle(width / 2, height / 2, width, height, 0x151515);
 
     this.add
-      .rectangle(width / 2, height / 2, width, height, 0x151515)
-      .setDepth(-1);
-
-    this.soundButton = this.add
-      .rectangle(width - 82, 28, 112, 36, 0xfacc15)
-      .setInteractive({ useHandCursor: true });
-    this.soundButtonLabel = this.add
-      .text(width - 82, 28, `SOUND: ${this.soundEnabled ? "ON" : "OFF"}`, {
-        color: "#000000",
-        fontFamily: "Arial, sans-serif",
-        fontSize: "14px",
+      .text(width / 2, height * 0.2, "TSURUGAOKA QUEST", {
+        color: "#facc15",
+        fontFamily: '"Courier New", monospace',
+        fontSize: `${Math.min(64, width / 13)}px`,
         fontStyle: "bold",
+        letterSpacing: 3,
       })
       .setOrigin(0.5);
-    this.soundButton.on("pointerover", () => {
-      this.soundButton.setFillStyle(0xffe66d);
-    });
-    this.soundButton.on("pointerout", () => {
-      this.soundButton.setFillStyle(0xfacc15);
-    });
-    this.soundButton.on("pointerdown", () => {
-      this.soundEnabled = !this.soundEnabled;
-      window.localStorage.setItem(
-        SOUND_ENABLED_STORAGE_KEY,
-        String(this.soundEnabled),
-      );
-      this.soundButtonLabel.setText(`SOUND: ${this.soundEnabled ? "ON" : "OFF"}`);
-    });
 
-    const characterSize = Math.min((width - 72) / 3, height * 0.34, 180);
-    const characterY = height * 0.53;
-    const characterSpacing = characterSize + Math.min(18, width * 0.02);
     this.add
-      .rectangle(
-        width / 2,
-        characterY,
-        characterSize + characterSpacing * 2,
-        characterSize,
-        0x151515,
-      )
-      .setDepth(-0.5);
+      .text(width / 2, height * 0.35, "冒険の準備はできましたか？", {
+        color: "#ffffff",
+        fontFamily: "Arial, sans-serif",
+        fontSize: "20px",
+      })
+      .setOrigin(0.5);
 
-    const characterImages = [
-      this.add.image(width / 2 - characterSpacing, characterY, "hary"),
-      this.add.image(width / 2, characterY, "fb"),
-      this.add.image(width / 2 + characterSpacing, characterY, "lipton"),
-    ];
-    characterImages.forEach((characterImage, index) => {
-      characterImage.setOrigin(0.5).setAlpha(0.95);
-      characterImage.setDisplaySize(characterSize, characterSize);
-      this.tweens.add({
-        targets: characterImage,
-        y: characterY - Math.min(24, characterSize * 0.16),
-        duration: 320,
-        delay: index * 180,
-        ease: "Sine.easeOut",
-        yoyo: true,
-        repeat: -1,
-        repeatDelay: 260,
-      });
-    });
-
-    const titleWidth = Math.min(width - 56, 720);
-    const titleHeight = 142;
-    const titleY = height * 0.15;
-    const titleContainer = this.add.container(width / 2, -titleHeight);
-
-    titleContainer
-      .add(
-        this.add
-      .graphics()
-      .fillStyle(0xfacc15, 0.8)
-      .fillRoundedRect(
-        -titleWidth / 2,
-        -titleHeight / 2,
-        titleWidth,
-        titleHeight,
-        16,
-      ),
-    )
-      .add(
-        this.add
-          .text(0, 0, "TSURUGAOKA QUEST", {
-            color: "#000000",
-            fontFamily: '"Courier New", monospace',
-            fontSize: `${Math.min(64, width / 13)}px`,
-            fontStyle: "bold",
-            letterSpacing: 3,
-            shadow: {
-              offsetX: 2,
-              offsetY: 2,
-              color: "#6b5500",
-              blur: 0,
-              stroke: true,
-              fill: true,
-            },
-          })
-          .setOrigin(0.5),
-      )
-      .setAlpha(0);
-
-    this.tweens.add({
-      targets: titleContainer,
-      y: titleY,
-      alpha: 1,
-      duration: 1800,
-      ease: "Sine.easeOut",
-    });
-
-    this.startButton = this.add
-      .rectangle(width / 2, height * 0.78, Math.min(width - 140, 250), 58, 0xfacc15)
+    const button = this.add
+      .rectangle(width / 2, height * 0.72, Math.min(width - 140, 250), 58, 0xfacc15)
       .setInteractive({ useHandCursor: true });
-    this.startButtonLabel = this.add
-      .text(width / 2, height * 0.78, "START", {
+    const label = this.add
+      .text(width / 2, height * 0.72, "START", {
         color: "#000000",
         fontFamily: "Arial, sans-serif",
         fontSize: "24px",
@@ -145,29 +62,19 @@ class StartScene extends Phaser.Scene {
       })
       .setOrigin(0.5);
 
-    this.startButton.on("pointerover", () => {
-      this.startButton.setFillStyle(0xffe66d);
-      this.startButton.setScale(1.03);
-      this.startButtonLabel.setScale(1.03);
+    button.on("pointerover", () => {
+      button.setFillStyle(0xffe66d);
+      button.setScale(1.03);
+      label.setScale(1.03);
     });
-    this.startButton.on("pointerout", () => {
-      this.startButton.setFillStyle(0xfacc15);
-      this.startButton.setScale(1);
-      this.startButtonLabel.setScale(1);
+    button.on("pointerout", () => {
+      button.setFillStyle(0xfacc15);
+      button.setScale(1);
+      label.setScale(1);
     });
-    this.startButton.on("pointerdown", () => {
-      if (this.soundEnabled) {
-        this.playStartSound();
-      }
-      this.startButton.disableInteractive();
-      this.tweens.add({
-        targets: [this.startButton, this.startButtonLabel],
-        alpha: 0.35,
-        duration: 220,
-        ease: "Sine.easeInOut",
-        yoyo: true,
-        repeat: -1,
-      });
+    button.on("pointerdown", () => {
+      if (this.soundEnabled) this.playStartSound();
+      this.scene.start("OpeningScene");
     });
   }
 
@@ -176,36 +83,256 @@ class StartScene extends Phaser.Scene {
   }
 
   private playStartSound() {
-    const AudioContextClass = window.AudioContext;
-    const context = new AudioContextClass();
-    const masterGain = context.createGain();
-    const now = context.currentTime;
-    const notes = [523.25, 659.25, 783.99, 1046.5];
+    const context = new window.AudioContext();
+    const oscillator = context.createOscillator();
+    const gain = context.createGain();
+    oscillator.type = "triangle";
+    oscillator.frequency.value = 523.25;
+    gain.gain.setValueAtTime(0.0001, context.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.12, context.currentTime + 0.03);
+    gain.gain.exponentialRampToValueAtTime(0.0001, context.currentTime + 0.45);
+    oscillator.connect(gain);
+    gain.connect(context.destination);
+    oscillator.start();
+    oscillator.stop(context.currentTime + 0.5);
+    window.setTimeout(() => void context.close(), 650);
+  }
+}
 
-    masterGain.gain.setValueAtTime(0.0001, now);
-    masterGain.gain.exponentialRampToValueAtTime(0.12, now + 0.03);
-    masterGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.95);
-    masterGain.connect(context.destination);
+class OpeningScene extends Phaser.Scene {
+  private dialogueText!: Phaser.GameObjects.Text;
+  private speakerText!: Phaser.GameObjects.Text;
+  private panel!: Phaser.GameObjects.Rectangle;
+  private advanceButton!: Phaser.GameObjects.Triangle;
+  private typingTimer?: Phaser.Time.TimerEvent;
+  private fullText = "";
+  private characterImages: Phaser.GameObjects.Image[] = [];
+  private selectedCharacter?: (typeof characters)[number];
+  private phase: "welcome" | "name" | "selection" | "confirm" | "warning" | "final" = "welcome";
+  private isTyping = false;
+  private canAdvance = false;
+  private choiceObjects: Phaser.GameObjects.Text[] = [];
 
-    notes.forEach((frequency, index) => {
-      const oscillator = context.createOscillator();
-      const noteGain = context.createGain();
-      const startAt = now + index * 0.11;
+  constructor() {
+    super("OpeningScene");
+  }
 
-      oscillator.type = "triangle";
-      oscillator.frequency.setValueAtTime(frequency, startAt);
-      noteGain.gain.setValueAtTime(0.0001, startAt);
-      noteGain.gain.exponentialRampToValueAtTime(0.7, startAt + 0.02);
-      noteGain.gain.exponentialRampToValueAtTime(0.0001, startAt + 0.32);
-      oscillator.connect(noteGain);
-      noteGain.connect(masterGain);
-      oscillator.start(startAt);
-      oscillator.stop(startAt + 0.34);
+  preload() {
+    characters.forEach((character) => this.load.image(character.key, character.image));
+  }
+
+  create() {
+    const { width, height } = this.scale;
+    this.add.rectangle(width / 2, height / 2, width, height, 0x151515);
+    this.createDialogueBox();
+    this.showDialogue("???", "ようこそ、TSURUGAOKA QUESTの世界へ。", "welcome");
+  }
+
+  private createDialogueBox() {
+    const { width, height } = this.scale;
+    const panelHeight = Math.min(175, height * 0.31);
+    const panelY = height - panelHeight / 2 - 18;
+    this.panel = this.add
+      .rectangle(width / 2, panelY, width - 36, panelHeight, 0xffffff)
+      .setStrokeStyle(3, 0x111111)
+      .setInteractive({ useHandCursor: true });
+    this.speakerText = this.add
+      .text(34, panelY - panelHeight / 2 + 16, "", {
+        color: "#111111",
+        fontFamily: "Arial, sans-serif",
+        fontSize: "18px",
+        fontStyle: "bold",
+      })
+      .setOrigin(0, 0);
+    this.dialogueText = this.add
+      .text(34, panelY - panelHeight / 2 + 52, "", {
+        color: "#111111",
+        fontFamily: "Arial, sans-serif",
+        fontSize: `${Math.min(25, width / 32)}px`,
+        wordWrap: { width: width - 95 },
+      })
+      .setOrigin(0, 0);
+    this.advanceButton = this.add
+      .triangle(width - 54, panelY + panelHeight / 2 - 28, 0, 0, 20, 10, 40, 0, 0x111111)
+      .setVisible(false)
+      .setInteractive({ useHandCursor: true });
+
+    this.panel.on("pointerdown", () => this.advanceDialogue());
+    this.advanceButton.on("pointerdown", () => this.advanceDialogue());
+  }
+
+  private showDialogue(
+    speaker: string,
+    text: string,
+    phase: OpeningScene["phase"],
+  ) {
+    this.phase = phase;
+    this.clearChoices();
+    this.speakerText.setText(speaker);
+    this.fullText = text;
+    this.dialogueText.setText("");
+    this.advanceButton.setVisible(false);
+    this.canAdvance = false;
+    this.isTyping = true;
+    this.typingTimer?.remove(false);
+    let index = 0;
+    this.typingTimer = this.time.addEvent({
+      delay: 55,
+      repeat: text.length - 1,
+      callback: () => {
+        index += 1;
+        this.dialogueText.setText(text.slice(0, index));
+        if (index === text.length) {
+          this.isTyping = false;
+          this.canAdvance = true;
+          this.advanceButton.setVisible(true);
+        }
+      },
+    });
+  }
+
+  private advanceDialogue() {
+    if (this.isTyping) {
+      this.typingTimer?.remove(false);
+      this.dialogueText.setText(this.fullText);
+      this.isTyping = false;
+      this.canAdvance = true;
+      this.advanceButton.setVisible(true);
+      return;
+    }
+    if (!this.canAdvance) return;
+    this.canAdvance = false;
+    this.advanceButton.setVisible(false);
+
+    if (this.phase === "welcome") {
+      this.showDialogue("???", "そういえば、君、名前は？", "name");
+    } else if (this.phase === "name") {
+      this.showCharacterSelection();
+    } else if (this.phase === "warning") {
+      this.showDialogue("???", `${this.selectedCharacter?.name}、ひぃ----`, "final");
+    } else if (this.phase === "final") {
+      this.transitionToChapter();
+    }
+  }
+
+  private showCharacterSelection() {
+    this.phase = "selection";
+    this.clearChoices();
+    const { width, height } = this.scale;
+    const imageSize = Math.min(150, width * 0.24, height * 0.3);
+    const spacing = Math.min(width * 0.28, 220);
+    this.characterImages = characters.map((character, index) => {
+      const image = this.add
+        .image(width / 2 + (index - 1) * spacing, height * 0.34, character.key)
+        .setDisplaySize(imageSize, imageSize)
+        .setInteractive({ useHandCursor: true });
+      image.on("pointerdown", () => this.selectCharacter(character));
+      this.add
+        .text(image.x, image.y + imageSize / 2 + 15, character.name, {
+          color: "#ffffff",
+          fontSize: "18px",
+          fontStyle: "bold",
+        })
+        .setOrigin(0.5);
+      return image;
     });
 
-    window.setTimeout(() => {
-      void context.close();
-    }, 1100);
+    this.speakerText.setText("???");
+    this.dialogueText.setText("そういえば、君、名前は？");
+    this.addChoice("1. えふびぃだ。", 0, () => this.selectCharacter(characters[0]));
+    this.addChoice("2. はりぃだよ", 1, () => this.selectCharacter(characters[1]));
+    this.addChoice("3. りぷおだよ。", 2, () => this.selectCharacter(characters[2]));
+  }
+
+  private selectCharacter(character: (typeof characters)[number]) {
+    this.selectedCharacter = character;
+    this.characterImages.forEach((image) => image.destroy());
+    this.characterImages = [];
+    this.clearChoices();
+    const { width, height } = this.scale;
+    const image = this.add
+      .image(width / 2, height * 0.34, character.key)
+      .setDisplaySize(Math.min(190, width * 0.3, height * 0.37), Math.min(190, width * 0.3, height * 0.37));
+    this.characterImages.push(image);
+    this.tweens.add({
+      targets: image,
+      y: image.y - 14,
+      duration: 300,
+      yoyo: true,
+      repeat: -1,
+      ease: "Sine.easeInOut",
+    });
+    this.showDialogue("???", `${character.name}か？`, "confirm");
+    this.addChoice("1. そうだよ。", 0, () => this.confirmCharacter(true));
+    this.addChoice("2. ちがうんだな。", 1, () => this.confirmCharacter(false));
+  }
+
+  private confirmCharacter(confirmed: boolean) {
+    if (!confirmed) {
+      this.characterImages.forEach((image) => image.destroy());
+      this.characterImages = [];
+      this.showCharacterSelection();
+      return;
+    }
+    this.clearChoices();
+    this.showDialogue(
+      "???",
+      `そうか、、、${this.selectedCharacter?.name}、いつまで寝ているんだ。学校遅刻するぞ。遅刻したら、どうなるか知っているよな？`,
+      "warning",
+    );
+    const selectedImage = this.characterImages[0];
+    this.tweens.add({
+      targets: selectedImage,
+      x: selectedImage.x + 5,
+      duration: 50,
+      yoyo: true,
+      repeat: -1,
+    });
+  }
+
+  private addChoice(label: string, index: number, callback: () => void) {
+    const { width, height } = this.scale;
+    const choice = this.add
+      .text(58, height - 125 + index * 27, label, {
+        color: "#111111",
+        fontFamily: "Arial, sans-serif",
+        fontSize: "18px",
+        backgroundColor: "#f1f1f1",
+        padding: { left: 8, right: 8, top: 3, bottom: 3 },
+      })
+      .setInteractive({ useHandCursor: true });
+    choice.on("pointerover", () => choice.setColor("#8a5a00"));
+    choice.on("pointerout", () => choice.setColor("#111111"));
+    choice.on("pointerdown", callback);
+    this.choiceObjects.push(choice);
+  }
+
+  private clearChoices() {
+    this.choiceObjects.forEach((choice) => choice.destroy());
+    this.choiceObjects = [];
+  }
+
+  private transitionToChapter() {
+    this.cameras.main.fade(1300, 255, 255, 255);
+    this.time.delayedCall(1300, () => this.scene.start("ChapterScene"));
+  }
+}
+
+class ChapterScene extends Phaser.Scene {
+  constructor() {
+    super("ChapterScene");
+  }
+
+  create() {
+    const { width, height } = this.scale;
+    this.add.rectangle(width / 2, height / 2, width, height, 0x000000);
+    this.add
+      .text(width / 2, height / 2, "10月1日の朝", {
+        color: "#ffffff",
+        fontFamily: "Arial, sans-serif",
+        fontSize: `${Math.min(42, width / 18)}px`,
+      })
+      .setOrigin(0.5);
   }
 }
 
@@ -215,7 +342,7 @@ const game = new Phaser.Game({
   width: 960,
   height: 540,
   backgroundColor: "#151515",
-  scene: StartScene,
+  scene: [StartScene, OpeningScene, ChapterScene],
   scale: {
     mode: Phaser.Scale.RESIZE,
     autoCenter: Phaser.Scale.CENTER_BOTH,
