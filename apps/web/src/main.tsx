@@ -103,6 +103,7 @@ class OpeningScene extends Phaser.Scene {
   private dialogueText!: Phaser.GameObjects.Text;
   private speakerText!: Phaser.GameObjects.Text;
   private panel!: Phaser.GameObjects.Rectangle;
+  private whiteOverlay!: Phaser.GameObjects.Rectangle;
   private advanceButton!: Phaser.GameObjects.Triangle;
   private typingTimer?: Phaser.Time.TimerEvent;
   private fullText = "";
@@ -124,6 +125,10 @@ class OpeningScene extends Phaser.Scene {
   create() {
     const { width, height } = this.scale;
     this.add.rectangle(width / 2, height / 2, width, height, 0x151515);
+    this.whiteOverlay = this.add
+      .rectangle(width / 2, height / 2, width, height, 0xffffff)
+      .setAlpha(0)
+      .setDepth(1);
     this.createDialogueBox();
     this.showDialogue("???", "ようこそ、TSURUGAOKA QUESTの世界へ。", "welcome");
   }
@@ -135,6 +140,7 @@ class OpeningScene extends Phaser.Scene {
     this.panel = this.add
       .rectangle(width / 2, panelY, width - 36, panelHeight, 0xffffff)
       .setStrokeStyle(3, 0x111111)
+      .setDepth(2)
       .setInteractive({ useHandCursor: true });
     this.speakerText = this.add
       .text(34, panelY - panelHeight / 2 + 16, "", {
@@ -144,6 +150,7 @@ class OpeningScene extends Phaser.Scene {
         fontStyle: "bold",
       })
       .setOrigin(0, 0);
+    this.speakerText.setDepth(2);
     this.dialogueText = this.add
       .text(34, panelY - panelHeight / 2 + 52, "", {
         color: "#111111",
@@ -152,9 +159,11 @@ class OpeningScene extends Phaser.Scene {
         wordWrap: { width: width - 95 },
       })
       .setOrigin(0, 0);
+    this.dialogueText.setDepth(2);
     this.advanceButton = this.add
       .triangle(width - 54, panelY + panelHeight / 2 - 28, 0, 0, 20, 10, 40, 0, 0x111111)
       .setVisible(false)
+      .setDepth(2)
       .setInteractive({ useHandCursor: true });
 
     this.panel.on("pointerdown", () => this.advanceDialogue());
@@ -252,6 +261,7 @@ class OpeningScene extends Phaser.Scene {
     const { width, height } = this.scale;
     const image = this.add
       .image(width / 2, height * 0.34, character.key)
+      .setDepth(1.5)
       .setDisplaySize(Math.min(190, width * 0.3, height * 0.37), Math.min(190, width * 0.3, height * 0.37));
     this.characterImages.push(image);
     this.tweens.add({
@@ -287,6 +297,18 @@ class OpeningScene extends Phaser.Scene {
       duration: 50,
       yoyo: true,
       repeat: -1,
+    });
+    this.tweens.add({
+      targets: selectedImage,
+      alpha: 0,
+      duration: 1800,
+      ease: "Sine.easeIn",
+    });
+    this.tweens.add({
+      targets: this.whiteOverlay,
+      alpha: 1,
+      duration: 1800,
+      ease: "Sine.easeIn",
     });
   }
 
