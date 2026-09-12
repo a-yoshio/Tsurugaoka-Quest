@@ -24,3 +24,6 @@ amplifyconfiguration.json
 !.env.example
 coverage/
 *.log
+
+# Template/source
+tmp/
