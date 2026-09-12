@@ -1,5 +1,5 @@
 :root {
-  background: #101828;
+  background: #151515;
 }
 
 * {
@@ -10,8 +10,8 @@ html,
 body {
   margin: 0;
   min-width: 320px;
-  min-height: 100%;
-  background: #101828;
+  min-height: 100dvh;
+  background: #151515;
 }
 
 body {
@@ -20,7 +20,7 @@ body {
 
 #game-root {
   width: 100vw;
-  height: 100vh;
+  height: 100dvh;
   min-height: 320px;
   display: grid;
   place-items: center;
@@ -28,13 +28,6 @@ body {
 
 #game-root canvas {
   display: block;
-  max-width: 100%;
-  max-height: 100%;
-}
-
-@media (max-width: 600px) {
-  #game-root canvas {
-    width: 100%;
-    height: auto;
-  }
+  width: 100%;
+  height: 100%;
 }
