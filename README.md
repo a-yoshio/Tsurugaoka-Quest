@@ -1,11 +1,11 @@
 # Tsurugaoka Quest
 
-鶴岡クエストのモバイルアプリと AWS バックエンドを管理する pnpm monorepo です。
+TSURUGAOKA QUEST の Web アプリと AWS バックエンドを管理する pnpm monorepo です。
 
 ## 使用技術
 
 - Node.js 22 / pnpm 9
-- フロントエンド: TypeScript, React Native (Expo SDK 54), `react-native-webview`
+- フロントエンド: TypeScript, React, Vite
 - バックエンド: AWS Amplify Gen 2 (AWS AppSync + DynamoDB)
 - ツールチェーン: mise
 
@@ -26,6 +26,8 @@ docker build -t tsurugaoka-quest .
 docker run --rm -it -p 8081:8081 tsurugaoka-quest
 ```
 
+GitHub Codespaces では `.devcontainer/devcontainer.json` が使用され、zsh が既定のターミナルとして開きます。mise はコンテナ内の全ユーザーから利用できます。
+
 ### 依存関係のインストール
 
 ```sh
@@ -34,7 +36,7 @@ pnpm install
 
 ### 開発
 
-モバイルアプリの開発サーバーを起動します。Expo Go または Android/iOS シミュレーターで確認できます。
+Web アプリの開発サーバーを起動します。ブラウザで `http://localhost:5173` を開いて確認できます。
 
 ```sh
 pnpm dev
@@ -51,19 +53,17 @@ pnpm dev:backend
 ```sh
 pnpm build
 pnpm test
+pnpm lint
 ```
 
-ネイティブ実機・シミュレーター向けのビルドは、依存関係のインストール後に次のコマンドを使用します。
-
-```sh
-pnpm --filter @tsurugaoka/mobile android
-pnpm --filter @tsurugaoka/mobile ios
-```
+モバイルアプリ化は Web 版のゲーム完成後に行います。現在の `apps/mobile` は将来の移植用に保持しています。
+モバイル側の既存コードを個別に確認する場合は `pnpm test:mobile` または `pnpm build:mobile` を使用します。
 
 ## ディレクトリ構成
 
 ```text
-apps/mobile/       React Native アプリ（WebView シェル）
+apps/web/          React + Vite の Web アプリ
+apps/mobile/       将来のモバイル移植用 React Native アプリ
 packages/backend/  Amplify Gen 2 の AppSync/DynamoDB 定義
 docs/userstory/    ユーザーストーリー
 ```

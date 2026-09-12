@@ -19,7 +19,7 @@ const startScreen = `
   </head>
   <body>
     <main>
-      <h1>鶴岡クエスト</h1>
+      <h1>TSURUGAOKA QUEST</h1>
       <p>冒険の準備はできましたか？</p>
       <button id="start" type="button">ゲームを始める</button>
     </main>
