@@ -16,6 +16,8 @@ export class OpeningScene extends Phaser.Scene {
   private isTyping = false;
   private canAdvance = false;
   private choiceObjects: Phaser.GameObjects.Text[] = [];
+  private selectionFrame?: Phaser.GameObjects.Rectangle;
+  private selectionInnerFrame?: Phaser.GameObjects.Rectangle;
 
   constructor() {
     super("OpeningScene");
@@ -69,8 +71,14 @@ export class OpeningScene extends Phaser.Scene {
       .setDepth(2)
       .setInteractive({ useHandCursor: true });
 
-    this.panel.on("pointerdown", () => this.advanceDialogue());
-    this.advanceButton.on("pointerdown", () => this.advanceDialogue());
+    this.panel.on("pointerdown", () => {
+      this.playDialogueSound();
+      this.advanceDialogue();
+    });
+    this.advanceButton.on("pointerdown", () => {
+      this.playDialogueSound();
+      this.advanceDialogue();
+    });
   }
 
   private showDialogue(
@@ -80,6 +88,8 @@ export class OpeningScene extends Phaser.Scene {
   ) {
     this.phase = phase;
     this.clearChoices();
+    this.clearSelectionFrame();
+    this.dialogueText.setWordWrapWidth(this.scale.width - 95);
     this.speakerText.setText(speaker);
     this.fullText = text;
     this.dialogueText.setText("");
@@ -121,7 +131,8 @@ export class OpeningScene extends Phaser.Scene {
     } else if (this.phase === "name") {
       this.showCharacterSelection();
     } else if (this.phase === "warning") {
-      this.showDialogue("???", `${this.selectedCharacter?.name}、ひぃ----`, "final");
+      this.showDialogue(`${this.selectedCharacter?.name}`, `ひぃ----`, "final");
+      this.startFinalEffect();
     } else if (this.phase === "final") {
       this.transitionToChapter();
     }
@@ -130,6 +141,7 @@ export class OpeningScene extends Phaser.Scene {
   private showCharacterSelection() {
     this.phase = "selection";
     this.clearChoices();
+    this.clearSelectionFrame();
     this.characterNames.forEach((name) => name.destroy());
     this.characterNames = [];
     const { width, height } = this.scale;
@@ -138,9 +150,7 @@ export class OpeningScene extends Phaser.Scene {
     this.characterImages = characters.map((character, index) => {
       const image = this.add
         .image(width / 2 + (index - 1) * spacing, height * 0.34, character.key)
-        .setDisplaySize(imageSize, imageSize)
-        .setInteractive({ useHandCursor: true });
-      image.on("pointerdown", () => this.selectCharacter(character));
+        .setDisplaySize(imageSize, imageSize);
       const name = this.add
         .text(image.x, image.y + imageSize / 2 + 15, character.name, {
           color: "#ffffff",
@@ -154,9 +164,24 @@ export class OpeningScene extends Phaser.Scene {
 
     this.speakerText.setText("???");
     this.dialogueText.setText("そういえば、君、名前は？");
-    this.addChoice("1. えふびぃだ。", 0, () => this.selectCharacter(characters[0]));
-    this.addChoice("2. はりぃだよ", 1, () => this.selectCharacter(characters[1]));
-    this.addChoice("3. りぷおだよ。", 2, () => this.selectCharacter(characters[2]));
+    const {
+      x: choiceX,
+      startY: choiceStartY,
+      frameWidth,
+    } = this.createSelectionFrame(3);
+    this.dialogueText.setWordWrapWidth(Math.max(150, width - frameWidth - 70));
+    this.addChoice("1. えふびぃだ。", 0, () => {
+      this.clearDialogueText();
+      this.selectCharacter(characters[0]);
+    }, choiceX, choiceStartY);
+    this.addChoice("2. はりぃだよ", 1, () => {
+      this.clearDialogueText();
+      this.selectCharacter(characters[1]);
+    }, choiceX, choiceStartY);
+    this.addChoice("3. りぷおだよ。", 2, () => {
+      this.clearDialogueText();
+      this.selectCharacter(characters[2]);
+    }, choiceX, choiceStartY);
   }
 
   private selectCharacter(character: Character) {
@@ -181,8 +206,32 @@ export class OpeningScene extends Phaser.Scene {
       ease: "Sine.easeInOut",
     });
     this.showDialogue("???", `${character.name}か？`, "confirm");
-    this.addChoice("1. そうだよ。", 0, () => this.confirmCharacter(true));
-    this.addChoice("2. ちがうんだな。", 1, () => this.confirmCharacter(false));
+    const {
+      x: choiceX,
+      startY: choiceStartY,
+      frameWidth,
+    } = this.createSelectionFrame(2);
+    this.dialogueText.setWordWrapWidth(Math.max(150, width - frameWidth - 70));
+    this.addChoice(
+      "1. そうだよ。",
+      0,
+      () => {
+        this.clearDialogueText();
+        this.confirmCharacter(true);
+      },
+      choiceX,
+      choiceStartY,
+    );
+    this.addChoice(
+      "2. ちがう。",
+      1,
+      () => {
+        this.clearDialogueText();
+        this.confirmCharacter(false);
+      },
+      choiceX,
+      choiceStartY,
+    );
   }
 
   private confirmCharacter(confirmed: boolean) {
@@ -192,13 +241,20 @@ export class OpeningScene extends Phaser.Scene {
       this.showCharacterSelection();
       return;
     }
+    this.clearDialogueText();
     this.clearChoices();
     this.showDialogue(
       "???",
-      `そうか、、、${this.selectedCharacter?.name}、いつまで寝ているんだ。学校遅刻するぞ。遅刻したら、どうなるか知っているよな？`,
+      `そうか...。それより、${this.selectedCharacter?.name}。いつまで寝ているんだ。学校遅刻するぞ。\n...遅刻したら、どうなるか知っているよな？`,
       "warning",
     );
+  }
+
+  private startFinalEffect() {
     const selectedImage = this.characterImages[0];
+    if (!selectedImage) return;
+
+    this.tweens.killTweensOf(selectedImage);
     this.tweens.add({
       targets: selectedImage,
       x: selectedImage.x + 5,
@@ -206,24 +262,18 @@ export class OpeningScene extends Phaser.Scene {
       yoyo: true,
       repeat: -1,
     });
-    this.tweens.add({
-      targets: selectedImage,
-      alpha: 0,
-      duration: 1800,
-      ease: "Sine.easeIn",
-    });
-    this.tweens.add({
-      targets: this.whiteOverlay,
-      alpha: 1,
-      duration: 1800,
-      ease: "Sine.easeIn",
-    });
   }
 
-  private addChoice(label: string, index: number, callback: () => void) {
+  private addChoice(
+    label: string,
+    index: number,
+    callback: () => void,
+    x = 58,
+    startY?: number,
+  ) {
     const { height } = this.scale;
     const choice = this.add
-      .text(58, height - 125 + index * 27, label, {
+      .text(x, (startY ?? height - 125) + index * 27, label, {
         color: "#111111",
         fontFamily: "Arial, sans-serif",
         fontSize: "18px",
@@ -238,12 +288,88 @@ export class OpeningScene extends Phaser.Scene {
     this.choiceObjects.push(choice);
   }
 
+  private createSelectionFrame(choiceCount: number) {
+    const { width } = this.scale;
+    const frameWidth = Math.min(245, width * 0.34);
+    const frameHeight = 126;
+    const frameX = width - 24 - frameWidth / 2;
+    const frameY = this.panel.y;
+    this.selectionFrame = this.add
+      .rectangle(frameX, frameY, frameWidth, frameHeight, 0xffffff)
+      .setStrokeStyle(4, 0x111111)
+      .setDepth(2.5);
+    this.selectionInnerFrame = this.add
+      .rectangle(frameX, frameY, frameWidth - 14, frameHeight - 14)
+      .setStrokeStyle(2, 0x111111)
+      .setDepth(2.5);
+
+    return {
+      x: frameX - frameWidth / 2 + 18,
+      startY: frameY - ((choiceCount - 1) * 27) / 2 - 10,
+      frameWidth,
+    };
+  }
+
   private clearChoices() {
     this.choiceObjects.forEach((choice) => choice.destroy());
     this.choiceObjects = [];
   }
 
+  private clearSelectionFrame() {
+    this.selectionFrame?.destroy();
+    this.selectionInnerFrame?.destroy();
+    this.selectionFrame = undefined;
+    this.selectionInnerFrame = undefined;
+  }
+
+  private clearDialogueText() {
+    this.typingTimer?.remove(false);
+    this.typingTimer = undefined;
+    this.isTyping = false;
+    this.canAdvance = false;
+    this.dialogueText.setText("");
+  }
+
+  private playDialogueSound() {
+    if (window.localStorage.getItem("tsurugaoka-quest-sound-enabled") === "false") {
+      return;
+    }
+
+    const AudioContextClass = window.AudioContext;
+    const context = new AudioContextClass();
+    const oscillator = context.createOscillator();
+    const gain = context.createGain();
+    const now = context.currentTime;
+
+    oscillator.type = "square";
+    oscillator.frequency.setValueAtTime(660, now);
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(0.08, now + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.08);
+    oscillator.connect(gain);
+    gain.connect(context.destination);
+    oscillator.start(now);
+    oscillator.stop(now + 0.09);
+
+    window.setTimeout(() => {
+      void context.close();
+    }, 120);
+  }
+
   private transitionToChapter() {
+    const selectedImage = this.characterImages[0];
+    this.tweens.add({
+      targets: selectedImage,
+      alpha: 0,
+      duration: 1800,
+      ease: "Sine.easeIn",
+    });
+    this.tweens.add({
+      targets: this.whiteOverlay,
+      alpha: 1,
+      duration: 1800,
+      ease: "Sine.easeIn",
+    });
     this.cameras.main.fade(1300, 255, 255, 255);
     this.time.delayedCall(1300, () => this.scene.start("ChapterScene"));
   }
