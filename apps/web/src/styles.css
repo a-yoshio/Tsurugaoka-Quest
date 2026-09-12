@@ -1,0 +1,33 @@
+:root {
+  background: #151515;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100dvh;
+  background: #151515;
+}
+
+body {
+  overflow: hidden;
+}
+
+#game-root {
+  width: 100vw;
+  height: 100dvh;
+  min-height: 320px;
+  display: grid;
+  place-items: center;
+}
+
+#game-root canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}

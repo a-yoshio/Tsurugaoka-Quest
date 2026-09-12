@@ -1,0 +1,17 @@
+{
+  "name": "tsurugaoka-quest",
+  "private": true,
+  "packageManager": "pnpm@9.15.5",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "dev": "pnpm --filter @tsurugaoka/web dev",
+    "dev:backend": "pnpm --filter @tsurugaoka/backend sandbox",
+    "build": "pnpm --filter @tsurugaoka/web --filter @tsurugaoka/backend build",
+    "test": "pnpm --filter @tsurugaoka/web --filter @tsurugaoka/backend test",
+    "lint": "pnpm --filter @tsurugaoka/web --filter @tsurugaoka/backend lint",
+    "build:mobile": "pnpm --filter @tsurugaoka/mobile build",
+    "test:mobile": "pnpm --filter @tsurugaoka/mobile test"
+  }
+}
