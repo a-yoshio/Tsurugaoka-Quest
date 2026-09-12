@@ -10,6 +10,7 @@ export class OpeningScene extends Phaser.Scene {
   private typingTimer?: Phaser.Time.TimerEvent;
   private fullText = "";
   private characterImages: Phaser.GameObjects.Image[] = [];
+  private characterNames: Phaser.GameObjects.Text[] = [];
   private selectedCharacter?: Character;
   private phase: "welcome" | "name" | "selection" | "confirm" | "warning" | "final" = "welcome";
   private isTyping = false;
@@ -129,6 +130,8 @@ export class OpeningScene extends Phaser.Scene {
   private showCharacterSelection() {
     this.phase = "selection";
     this.clearChoices();
+    this.characterNames.forEach((name) => name.destroy());
+    this.characterNames = [];
     const { width, height } = this.scale;
     const imageSize = Math.min(150, width * 0.24, height * 0.3);
     const spacing = Math.min(width * 0.28, 220);
@@ -138,13 +141,14 @@ export class OpeningScene extends Phaser.Scene {
         .setDisplaySize(imageSize, imageSize)
         .setInteractive({ useHandCursor: true });
       image.on("pointerdown", () => this.selectCharacter(character));
-      this.add
+      const name = this.add
         .text(image.x, image.y + imageSize / 2 + 15, character.name, {
           color: "#ffffff",
           fontSize: "18px",
           fontStyle: "bold",
         })
         .setOrigin(0.5);
+      this.characterNames.push(name);
       return image;
     });
 
@@ -159,6 +163,8 @@ export class OpeningScene extends Phaser.Scene {
     this.selectedCharacter = character;
     this.characterImages.forEach((image) => image.destroy());
     this.characterImages = [];
+    this.characterNames.forEach((name) => name.destroy());
+    this.characterNames = [];
     this.clearChoices();
     const { width, height } = this.scale;
     const image = this.add
@@ -224,6 +230,7 @@ export class OpeningScene extends Phaser.Scene {
         backgroundColor: "#f1f1f1",
         padding: { left: 8, right: 8, top: 3, bottom: 3 },
       })
+      .setDepth(3)
       .setInteractive({ useHandCursor: true });
     choice.on("pointerover", () => choice.setColor("#8a5a00"));
     choice.on("pointerout", () => choice.setColor("#111111"));
