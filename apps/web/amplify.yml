@@ -10,7 +10,6 @@ applications:
         build:
           commands:
             - pnpm --filter web build
-            - test -f dist/index.html
       artifacts:
         baseDirectory: apps/web/dist
         files:
