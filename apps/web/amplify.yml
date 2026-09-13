@@ -8,6 +8,7 @@ applications:
             - npm install --global pnpm@9.15.5
             - cd ../.. && pnpm install --frozen-lockfile
         build:
+          baseDirectory: apps/web
           commands:
             - pnpm --filter web build
       artifacts:
