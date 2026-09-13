@@ -10,8 +10,6 @@ applications:
         build:
           commands:
             - pnpm --filter web build
-        postBuild:
-          commands:
             - test -f dist/index.html
       artifacts:
         baseDirectory: apps/web/dist
