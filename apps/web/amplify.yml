@@ -12,11 +12,11 @@ applications:
             - test -n "$ASSETS_S3_BUCKET"
             - test -n "$ASSETS_S3_BASE_URL"
             - VITE_ASSETS_S3_BASE_URL="$ASSETS_S3_BASE_URL" pnpm --filter @tsurugaoka/web build
-            - aws s3 sync dist/assets "s3://$ASSETS_S3_BUCKET/assets/image/assets" --exclude "image/*" --only-show-errors
-            - aws s3 sync dist/assets/image "s3://$ASSETS_S3_BUCKET/assets/image" --only-show-errors
+            - aws s3 sync apps/web/dist/assets "s3://$ASSETS_S3_BUCKET/assets/image/assets" --exclude "image/*" --only-show-errors
+            - aws s3 sync apps/web/dist/assets/image "s3://$ASSETS_S3_BUCKET/assets/image" --only-show-errors
         postBuild:
           commands:
-            - test -f dist/index.html
+            - test -f apps/web/dist/index.html
       artifacts:
         baseDirectory: apps/web/dist
         files:
