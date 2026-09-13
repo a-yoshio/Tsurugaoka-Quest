@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import { assetUrl } from "../assets";
 
 const SOUND_ENABLED_STORAGE_KEY = "tsurugaoka-quest-sound-enabled";
 
@@ -14,9 +15,9 @@ export class StartScene extends Phaser.Scene {
   }
 
   preload() {
-    this.load.image("hary", "/hary-front.png");
-    this.load.image("fb", "/fb-front.png");
-    this.load.image("lipton", "/lipton-front.png");
+    this.load.image("hary", assetUrl("hary-front.png"));
+    this.load.image("fb", assetUrl("fb-front.png"));
+    this.load.image("lipton", assetUrl("lipton-front.png"));
   }
 
   create() {

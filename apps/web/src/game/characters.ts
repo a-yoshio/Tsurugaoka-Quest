@@ -1,3 +1,5 @@
+import { assetUrl } from "./assets";
+
 export type CharacterId = "fb" | "hary" | "lipton";
 
 export type Character = {
@@ -9,7 +11,7 @@ export type Character = {
 };
 
 export const characters: Character[] = [
-  { id: "fb", key: "fb", name: "えふびぃ", answer: "えふびぃだ。", image: "/fb-front.png" },
-  { id: "hary", key: "hary", name: "はりぃ", answer: "はりぃだよ", image: "/hary-front.png" },
-  { id: "lipton", key: "lipton", name: "りぷお", answer: "りぷおだよ。", image: "/lipton-front.png" },
+  { id: "fb", key: "fb", name: "えふびぃ", answer: "えふびぃだ。", image: assetUrl("fb-front.png") },
+  { id: "hary", key: "hary", name: "はりぃ", answer: "はりぃだよ", image: assetUrl("hary-front.png") },
+  { id: "lipton", key: "lipton", name: "りぷお", answer: "りぷおだよ。", image: assetUrl("lipton-front.png") },
 ];
