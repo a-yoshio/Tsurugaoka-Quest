@@ -8,6 +8,8 @@ applications:
             - npm install --global pnpm@9.15.5
             - cd ../.. && pnpm install --frozen-lockfile
         build:
+          commands:
+            - pnpm --filter web build
         postBuild:
           commands:
             - test -f dist/index.html
