@@ -12,6 +12,6 @@ applications:
           commands:
             - pnpm --filter web build
       artifacts:
-        baseDirectory: apps/web/dist
+        baseDirectory: dist
         files:
-          - index.html
+          - '**/*'
