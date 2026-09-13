@@ -8,13 +8,6 @@ applications:
             - npm install --global pnpm@9.15.5
             - cd ../.. && pnpm install --frozen-lockfile
         build:
-          commands:
-            - test -n "$ASSETS_S3_BUCKET"
-            - test -n "$ASSETS_S3_BASE_URL"
-            - VITE_ASSETS_S3_BASE_URL="$ASSETS_S3_BASE_URL" pnpm --filter @tsurugaoka/web build
-            - aws s3 sync dist/assets "s3://$ASSETS_S3_BUCKET/assets/image/assets" --only-show-errors
-            - aws s3 cp dist "s3://$ASSETS_S3_BUCKET/assets" --recursive --exclude "*" --include "*.png" --only-show-errors
-            - aws s3 cp dist "s3://$ASSETS_S3_BUCKET/assets" --recursive --exclude "*" --include "*.png" --only-show-errors
         postBuild:
           commands:
             - test -f dist/index.html
