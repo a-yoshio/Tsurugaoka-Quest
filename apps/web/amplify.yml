@@ -14,6 +14,3 @@ applications:
         baseDirectory: apps/web/dist
         files:
           - index.html
-      cache:
-        paths:
-          - node_modules/**/*
