@@ -15,9 +15,9 @@ export class StartScene extends Phaser.Scene {
   }
 
   preload() {
-    this.load.image("hary", assetUrl("hary-front.png"));
-    this.load.image("fb", assetUrl("fb-front.png"));
-    this.load.image("lipton", assetUrl("lipton-front.png"));
+    this.load.image("hary", assetUrl("character/hary-front.png"));
+    this.load.image("fb", assetUrl("character/fb-front.png"));
+    this.load.image("lipton", assetUrl("character/lipton-front.png"));
   }
 
   create() {

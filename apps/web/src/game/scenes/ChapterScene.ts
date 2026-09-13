@@ -9,7 +9,7 @@ export class ChapterScene extends Phaser.Scene {
     const { width, height } = this.scale;
     this.add.rectangle(width / 2, height / 2, width, height, 0x000000);
     this.add
-      .text(width / 2, height / 2, "10月1日の朝", {
+      .text(width / 2, height / 2, "xx月1日の朝", {
         color: "#ffffff",
         fontFamily: "Arial, sans-serif",
         fontSize: `${Math.min(42, width / 18)}px`,
